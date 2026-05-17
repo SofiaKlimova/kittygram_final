@@ -7,7 +7,8 @@ volumes:
 
 services:
   db:
-    image: postgres:13.10
+    image: postgres:13
+    container_name: db
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
@@ -19,10 +20,12 @@ services:
 
   backend:
     build: ./backend
+    image: kittygram_backend:latest
+    container_name: backend
     env_file: .env
     volumes:
       - static:/staticfiles
-      - media:/app/media
+      - media:/media
     depends_on:
       db:
         condition: service_healthy
@@ -30,12 +33,15 @@ services:
 
   frontend:
     build: ./frontend
+    image: kittygram_frontend:latest
+    container_name: frontend
     volumes:
       - static:/staticfiles
-    command: cp -r /app/build/. /staticfiles/
 
   gateway:
     build: ./nginx
+    image: kittygram_gateway:latest    # добавляем имя образа
+    container_name: gateway
     ports:
       - "8000:80"
     volumes:
